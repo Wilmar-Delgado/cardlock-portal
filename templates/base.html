@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            Card-Lock Portal
+        {% endblock %}
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        main {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 10px 10px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+
+    {% block styles %}
+    {% endblock %}
+</head>
+
+<body>
+    <header>
+        <div style="
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        ">
+            <h1>Card-Lock Portal</h1>
+    
+            {% if user.is_authenticated %}
+                <nav style="
+                    display: flex;
+                    gap: 18px;
+                ">
+                    <a
+                        href="{% url 'dashboard:index' %}"
+                        style="color: white;"
+                    >
+                        Dashboard
+                    </a>
+    
+                    <a
+                        href="{% url 'cards:list' %}"
+                        style="color: white;"
+                    >
+                        Fuel Cards
+                    </a>
+    
+                    {% if user.is_superuser %}
+                        <a
+                            href="{% url 'admin:index' %}"
+                            style="color: white;"
+                        >
+                            Admin
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        </div>
+    
+        {% if user.is_authenticated %}
+            <div>
+                {{ user.username }}
+    
+                <form
+                    method="post"
+                    action="{% url 'logout' %}"
+                    style="display: inline;"
+                >
+                    {% csrf_token %}
+    
+                    <button type="submit">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </header>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+</body>
+</html>

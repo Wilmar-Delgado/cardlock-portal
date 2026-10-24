@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Dashboard | Card-Lock Portal
+{% endblock %}
+
+
+{% block styles %}
+
+<style>
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(180px, 1fr)
+        );
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .stat-card span {
+        display: block;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+
+    .stat-card strong {
+        font-size: 26px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    th,
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+    }
+
+    th {
+        background: #f9fafb;
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Dashboard</h2>
+
+{% if company %}
+    <p>
+        {{ company.name }}
+    </p>
+{% else %}
+    <p>
+        All Companies — Administrator View
+    </p>
+{% endif %}
+
+<div class="stats">
+
+    <div class="stat-card">
+        <span>Companies</span>
+        <strong>{{ stats.companies }}</strong>
+    </div>
+
+    <div class="stat-card">
+        <span>Employees</span>
+        <strong>{{ stats.employees }}</strong>
+    </div>
+
+    <div class="stat-card">
+        <span>Active Cards</span>
+        <strong>{{ stats.active_cards }}</strong>
+    </div>
+
+    <div class="stat-card">
+        <span>Stations</span>
+        <strong>{{ stats.stations }}</strong>
+    </div>
+
+    <div class="stat-card">
+        <span>Total Fuel Spend</span>
+        <strong>
+            ${{ stats.total_spend|floatformat:2 }}
+        </strong>
+    </div>
+
+    <div class="stat-card">
+        <span>Total Litres</span>
+        <strong>
+            {{ stats.total_litres|floatformat:1 }}
+        </strong>
+    </div>
+
+</div>
+
+
+<h3>Recent Fuel Transactions</h3>
+
+<table>
+
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Company</th>
+            <th>Card</th>
+            <th>Station</th>
+            <th>Fuel</th>
+            <th>Litres</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for transaction in recent_transactions %}
+
+            <tr>
+                <td>
+                    {{ transaction.transaction_at|date:"M d, Y H:i" }}
+                </td>
+
+                <td>
+                    {{ transaction.card.company.name }}
+                </td>
+
+                <td>
+                    {{ transaction.card.card_number }}
+                </td>
+
+                <td>
+                    {{ transaction.station.name }}
+                </td>
+
+                <td>
+                    {{ transaction.get_fuel_type_display }}
+                </td>
+
+                <td>
+                    {{ transaction.litres }}
+                </td>
+
+                <td>
+                    ${{ transaction.total_amount }}
+                </td>
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="7">
+                    No transactions found.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

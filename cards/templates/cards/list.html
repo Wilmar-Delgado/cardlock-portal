@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Fuel Cards | Card-Lock Portal
+{% endblock %}
+
+
+{% block styles %}
+
+<style>
+    .page-header {
+        margin-bottom: 24px;
+    }
+
+    .filters {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .filters input,
+    .filters select {
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+    }
+
+    .filters button {
+        padding: 10px 16px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    th,
+    td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+        background: #f9fafb;
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+    <h2>Fuel Cards</h2>
+
+    {% if company %}
+        <p>{{ company.name }}</p>
+    {% else %}
+        <p>All Companies — Administrator View</p>
+    {% endif %}
+</div>
+
+{% if can_manage_cards %}
+    <p>
+        <a href="{% url 'cards:create' %}">
+            + Add Fuel Card
+        </a>
+    </p>
+{% endif %}
+
+<form
+    method="get"
+    class="filters"
+>
+    <input
+        type="text"
+        name="q"
+        value="{{ search }}"
+        placeholder="Search cards..."
+    >
+
+    <select name="status">
+        <option value="">
+            All Statuses
+        </option>
+
+        {% for value, label in statuses %}
+            <option
+                value="{{ value }}"
+                {% if status == value %}
+                    selected
+                {% endif %}
+            >
+                {{ label }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">
+        Filter
+    </button>
+
+    <a href="{% url 'cards:list' %}">
+        Clear
+    </a>
+</form>
+
+
+<table>
+
+    <thead>
+        <tr>
+            <th>Card Number</th>
+
+            {% if not company %}
+                <th>Company</th>
+            {% endif %}
+
+            <th>Network</th>
+            <th>Status</th>
+            <th>Issued</th>
+            <th>Expires</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for card in cards %}
+
+            <tr>
+                <td>
+                    <a href="{% url 'cards:detail' card.id %}">
+                        {{ card.card_number }}
+                    </a>
+                </td>
+
+                {% if not company %}
+                    <td>
+                        {{ card.company.name }}
+                    </td>
+                {% endif %}
+
+                <td>
+                    {{ card.network|default:"—" }}
+                </td>
+
+                <td>
+                    {{ card.get_status_display }}
+                </td>
+
+                <td>
+                    {{ card.issued_at|date:"M d, Y"|default:"—" }}
+                </td>
+
+                <td>
+                    {{ card.expires_at|date:"M d, Y"|default:"—" }}
+                </td>
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="6">
+                    No fuel cards found.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}
