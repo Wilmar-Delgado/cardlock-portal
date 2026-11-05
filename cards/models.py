@@ -45,5 +45,16 @@ class CardAssignment(models.Model):
     unassigned_at = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["card"],
+                condition=models.Q(
+                    unassigned_at__isnull=True
+                ),
+                name="unique_active_assignment_per_card",
+            )
+        ]
+
     def __str__(self):
         return f"{self.card.card_number} → {self.employee}"

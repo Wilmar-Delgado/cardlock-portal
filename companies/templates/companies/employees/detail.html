@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ employee }} | Card-Lock Portal
+{% endblock %}
+
+{% block content %}
+
+<p>
+    <a href="{% url 'companies:employee_list' %}">
+        ← Back to Employees
+    </a>
+</p>
+
+<h2>
+    {{ employee.first_name }}
+    {{ employee.last_name }}
+</h2>
+
+<p>
+    <strong>Employee #:</strong>
+    {{ employee.employee_number }}
+</p>
+
+<p>
+    <strong>Company:</strong>
+    {{ employee.company.name }}
+</p>
+
+<p>
+    <strong>Job Title:</strong>
+    {{ employee.job_title|default:"—" }}
+</p>
+
+<p>
+    <strong>Email:</strong>
+    {{ employee.email|default:"—" }}
+</p>
+
+<p>
+    <strong>Phone:</strong>
+    {{ employee.phone|default:"—" }}
+</p>
+
+{% if can_manage_employees %}
+
+    <p>
+        <a href="{% url 'companies:employee_edit' employee.id %}">
+            Edit Employee
+        </a>
+
+        |
+
+        <a href="{% url 'companies:assign_card' employee.id %}">
+            Assign Fuel Card
+        </a>
+    </p>
+
+{% endif %}
+
+<hr>
+
+<h3>Card Assignment History</h3>
+
+<table style="
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+">
+
+    <thead>
+        <tr>
+            <th>Card</th>
+            <th>Network</th>
+            <th>Assigned</th>
+            <th>Unassigned</th>
+            <th>Status</th>
+
+            {% if can_manage_employees %}
+                <th>Action</th>
+            {% endif %}
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for assignment in assignments %}
+
+            <tr>
+
+                <td>
+                    <a href="{% url 'cards:detail' assignment.card.id %}">
+                        {{ assignment.card.card_number }}
+                    </a>
+                </td>
+
+                <td>
+                    {{ assignment.card.network }}
+                </td>
+
+                <td>
+                    {{ assignment.assigned_at }}
+                </td>
+
+                <td>
+                    {{ assignment.unassigned_at|default:"—" }}
+                </td>
+
+                <td>
+
+                    {% if assignment.unassigned_at %}
+                        Historical
+                    {% else %}
+                        Active
+                    {% endif %}
+
+                </td>
+
+                {% if can_manage_employees %}
+
+                    <td>
+
+                        {% if not assignment.unassigned_at %}
+
+                            <form
+                                method="post"
+                                action="{% url 'companies:unassign_card' employee.id assignment.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <button type="submit">
+                                    Unassign
+                                </button>
+                            </form>
+
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </td>
+
+                {% endif %}
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="6">
+                    No card assignment history.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

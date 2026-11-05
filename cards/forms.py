@@ -2,7 +2,7 @@ from django import forms
 
 from companies.models import Company
 
-from .models import FuelCard
+from .models import CardAssignment, FuelCard
 
 
 class FuelCardForm(forms.ModelForm):
@@ -56,3 +56,63 @@ class FuelCardForm(forms.ModelForm):
             )
 
         return cleaned_data
+
+
+class CardAssignmentForm(forms.ModelForm):
+    class Meta:
+        model = CardAssignment
+
+        fields = [
+            "card",
+            "assigned_at",
+        ]
+
+        widgets = {
+            "assigned_at": forms.DateInput(
+                attrs={"type": "date"}
+            ),
+        }
+
+    def __init__(
+        self,
+        *args,
+        employee=None,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+
+        self.employee = employee
+
+        if employee:
+            active_assignments = CardAssignment.objects.filter(
+                unassigned_at__isnull=True
+            )
+
+            self.fields["card"].queryset = (
+                FuelCard.objects
+                .filter(
+                    company=employee.company,
+                    status=FuelCard.Status.ACTIVE,
+                )
+                .exclude(
+                    assignments__in=active_assignments
+                )
+                .order_by("card_number")
+            )
+
+    def clean_card(self):
+        card = self.cleaned_data["card"]
+
+        if card.company_id != self.employee.company_id:
+            raise forms.ValidationError(
+                "This card belongs to another company."
+            )
+
+        if card.assignments.filter(
+            unassigned_at__isnull=True
+        ).exists():
+            raise forms.ValidationError(
+                "This card is already assigned."
+            )
+
+        return card

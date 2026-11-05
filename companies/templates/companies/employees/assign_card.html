@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Assign Fuel Card | Card-Lock Portal
+{% endblock %}
+
+{% block content %}
+
+<p>
+    <a href="{% url 'companies:employee_detail' employee.id %}">
+        ← Back to Employee
+    </a>
+</p>
+
+<h2>Assign Fuel Card</h2>
+
+<p>
+    Employee:
+    <strong>
+        {{ employee.first_name }}
+        {{ employee.last_name }}
+    </strong>
+</p>
+
+<p>
+    Company:
+    <strong>
+        {{ employee.company.name }}
+    </strong>
+</p>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        Assign Card
+    </button>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Employees | Card-Lock Portal
+{% endblock %}
+
+{% block content %}
+
+<h2>Employees</h2>
+
+{% if company %}
+    <p>{{ company.name }}</p>
+{% else %}
+    <p>All Companies — Administrator View</p>
+{% endif %}
+
+{% if can_manage_employees %}
+    <p>
+        <a href="{% url 'companies:employee_create' %}">
+            + Add Employee
+        </a>
+    </p>
+{% endif %}
+
+<form method="get">
+    <input
+        type="text"
+        name="q"
+        value="{{ search }}"
+        placeholder="Search employees..."
+    >
+
+    <button type="submit">
+        Search
+    </button>
+
+    <a href="{% url 'companies:employee_list' %}">
+        Clear
+    </a>
+</form>
+
+<br>
+
+<table style="
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+">
+
+    <thead>
+        <tr>
+            <th>Employee #</th>
+            <th>Name</th>
+
+            {% if not company %}
+                <th>Company</th>
+            {% endif %}
+
+            <th>Job Title</th>
+            <th>Email</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for employee in employees %}
+
+            <tr>
+                <td>
+                    {{ employee.employee_number }}
+                </td>
+
+                <td>
+                    <a
+                        href="{% url 'companies:employee_detail' employee.id %}"
+                    >
+                        {{ employee.first_name }}
+                        {{ employee.last_name }}
+                    </a>
+                </td>
+
+                {% if not company %}
+                    <td>
+                        {{ employee.company.name }}
+                    </td>
+                {% endif %}
+
+                <td>
+                    {{ employee.job_title|default:"—" }}
+                </td>
+
+                <td>
+                    {{ employee.email|default:"—" }}
+                </td>
+
+                <td>
+                    {% if employee.is_active %}
+                        Active
+                    {% else %}
+                        Inactive
+                    {% endif %}
+                </td>
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="6">
+                    No employees found.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

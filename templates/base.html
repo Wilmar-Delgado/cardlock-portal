@@ -78,6 +78,13 @@
                     >
                         Fuel Cards
                     </a>
+
+                    <a
+                        href="{% url 'companies:employee_list' %}"
+                        style="color: white;"
+                    >
+                        Employees
+                    </a>
     
                     {% if user.is_superuser %}
                         <a
