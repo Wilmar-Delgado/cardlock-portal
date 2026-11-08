@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Payment Submitted | Card-Lock Portal
+{% endblock %}
+
+{% block content %}
+
+<h2>Payment Submitted</h2>
+
+<p>
+    Your payment for
+    <strong>{{ invoice.invoice_number }}</strong>
+    was submitted through Stripe.
+</p>
+
+<p>
+    We're waiting for Stripe to confirm the payment.
+</p>
+
+<p>
+    <a href="{% url 'billing:invoice_detail' invoice.id %}">
+        Return to Invoice
+    </a>
+</p>
+
+{% endblock %}

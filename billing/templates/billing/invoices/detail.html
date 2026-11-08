@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ invoice.invoice_number }} | Card-Lock Portal
+{% endblock %}
+
+
+{% block content %}
+
+<p>
+    <a href="{% url 'billing:invoice_list' %}">
+        ← Back to Invoices
+    </a>
+</p>
+
+
+<h2>
+    {{ invoice.invoice_number }}
+</h2>
+
+
+<p>
+    <strong>Company:</strong>
+    {{ invoice.company.name }}
+</p>
+
+<p>
+    <strong>Billing Period:</strong>
+
+    {{ invoice.period_start|date:"M d, Y" }}
+    -
+    {{ invoice.period_end|date:"M d, Y" }}
+</p>
+
+<p>
+    <strong>Due Date:</strong>
+    {{ invoice.due_date|date:"M d, Y" }}
+</p>
+
+<hr>
+
+
+<p>
+    <strong>Subtotal:</strong>
+    ${{ invoice.subtotal|floatformat:2 }}
+</p>
+
+<p>
+    <strong>Tax:</strong>
+    ${{ invoice.tax|floatformat:2 }}
+</p>
+
+<p>
+    <strong>Total:</strong>
+    ${{ invoice.total|floatformat:2 }}
+</p>
+
+
+<hr>
+
+
+<p>
+    <strong>Status:</strong>
+    {{ invoice.get_status_display }}
+</p>
+
+
+{% if invoice.status == "open" %}
+
+    <form
+        method="post"
+        action="{% url 'billing:create_checkout_session' invoice.id %}"
+    >
+        {% csrf_token %}
+
+        <button type="submit">
+            Pay with Stripe
+        </button>
+    </form>
+
+{% elif invoice.status == "paid" %}
+
+    <p>
+        Paid
+    </p>
+
+{% endif %}
+
+{% endblock %}

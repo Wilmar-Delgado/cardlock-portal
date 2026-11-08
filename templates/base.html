@@ -85,6 +85,13 @@
                     >
                         Employees
                     </a>
+
+                    <a
+                        href="{% url 'billing:invoice_list' %}"
+                        style="color: white;"
+                    >
+                        Invoices
+                    </a>
     
                     {% if user.is_superuser %}
                         <a

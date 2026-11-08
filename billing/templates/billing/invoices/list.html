@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Invoices | Card-Lock Portal
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Invoices</h2>
+
+{% if company %}
+    <p>{{ company.name }}</p>
+{% else %}
+    <p>All Companies — Administrator View</p>
+{% endif %}
+
+
+<table style="
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+">
+
+    <thead>
+        <tr>
+            <th>Invoice</th>
+
+            {% if not company %}
+                <th>Company</th>
+            {% endif %}
+
+            <th>Billing Period</th>
+            <th>Due Date</th>
+            <th>Total</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for invoice in invoices %}
+
+            <tr>
+
+                <td>
+                    <a
+                        href="{% url 'billing:invoice_detail' invoice.id %}"
+                    >
+                        {{ invoice.invoice_number }}
+                    </a>
+                </td>
+
+                {% if not company %}
+                    <td>
+                        {{ invoice.company.name }}
+                    </td>
+                {% endif %}
+
+                <td>
+                    {{ invoice.period_start|date:"M d, Y" }}
+                    -
+                    {{ invoice.period_end|date:"M d, Y" }}
+                </td>
+
+                <td>
+                    {{ invoice.due_date|date:"M d, Y" }}
+                </td>
+
+                <td>
+                    ${{ invoice.total|floatformat:2 }}
+                </td>
+
+                <td>
+                    {{ invoice.get_status_display }}
+                </td>
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="6">
+                    No invoices found.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

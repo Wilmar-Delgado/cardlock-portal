@@ -24,4 +24,9 @@ urlpatterns = [
         "employees/",
         include("companies.urls"),
     ),
+
+    path(
+        "invoices/",
+        include("billing.urls"),
+    ),
 ]

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "stations.apps.StationsConfig",
     "transactions.apps.TransactionsConfig",
     "dashboard.apps.DashboardConfig",
+    "billing.apps.BillingConfig",
 ]
 
 MIDDLEWARE = [
@@ -136,3 +137,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
+
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
